@@ -5,31 +5,30 @@ public partial class Form1 : Form
     private Timer gameTimer = new Timer();
     private int fps = 60;
     private Player player = new Player { X = 100, Y = 500 };
-    private List<Enemy> enemies = new List<Enemy>();
-    private List<Bullet> bullets = new List<Bullet>();
     private Controller controller = new Controller();
-    
-    private int enemyDirection = 1; 
-    private int enemySpeed = 5; 
-    private int enemyMoveDownAmount = 20;
-    private int enemyMoveCounter = 0; 
-    private int enemyMoveInterval = 10;
+
+    private EnemyManager enemyManager;
+    private BulletManager bulletManager;
+
     public Form1()
     {
         InitializeComponent();
-        InitializeEnemies();
+
         this.DoubleBuffered = true;
         this.Width = 800;
         this.Height = 600;
         this.Text = "Space Invaders";
 
+        enemyManager = new EnemyManager(this.ClientSize.Width);
+        enemyManager.InitializeEnemies();
 
-        gameTimer.Tick += GameTimer_Tick;
+        bulletManager = new BulletManager(this.ClientSize.Height);
+
         gameTimer.Interval = 1000 / fps;
+        gameTimer.Tick += GameTimer_Tick;
         gameTimer.Start();
 
         this.Paint += Form1_Paint;
-
     }
 
     private void GameTimer_Tick(object sender, EventArgs e)
@@ -45,103 +44,31 @@ public partial class Form1 : Form
             controller.ResetShoot();
         }
 
-        UpdateEnemies();
-        UpdateBullets();
+        enemyManager.Update();
+        bulletManager.Update();
         CheckCollisions();
 
         this.Invalidate();
     }
+
     private void Shoot()
     {
-        bullets.Add(new Bullet
+        bulletManager.AddBullet(new Bullet
         {
             X = player.X + player.Width / 2 - 2,
             Y = player.Y - 10,
             IsPlayerBullet = true
         });
     }
-    private void InitializeEnemies()
-    {
-        int rows = 3;
-        int cols = 8;
-        int padding = 10;
-        int startX = 50;
-        int startY = 50;
 
-        enemies.Clear();
-
-        for (int r = 0; r < rows; r++)
-        {
-            for (int c = 0; c < cols; c++)
-            {
-                enemies.Add(new Enemy
-                {
-                    X = startX + c * (40 + padding),
-                    Y = startY + r * (30 + padding)
-                });
-            }
-        }
-    }
-    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-    {
-        controller.KeyDown(keyData);
-        return base.ProcessCmdKey(ref msg, keyData);
-    }
-
-    protected override void OnKeyUp(KeyEventArgs e)
-    {
-        controller.KeyUp(e.KeyCode);
-        base.OnKeyUp(e);
-    }
-    private void UpdateEnemies()
-    {
-        enemyMoveCounter++;
-
-        if (enemyMoveCounter >= enemyMoveInterval)
-        {
-            bool hitEdge = false;
-
-            foreach (var enemy in enemies)
-            {
-                enemy.Move(enemyDirection * enemySpeed, 0);
-            }
-
-            if (enemies.Any(e => e.X <= 0) || enemies.Any(e => e.X + e.Width >= this.ClientSize.Width))
-            {
-                hitEdge = true;
-            }
-
-            if (hitEdge)
-            {
-                enemyDirection *= -1;
-                foreach (var enemy in enemies)
-                {
-                    enemy.Y += enemyMoveDownAmount;
-                }
-            }
-
-            enemyMoveCounter = 0;
-        }
-    }
-    private void UpdateBullets()
-    {
-        for (int i = bullets.Count - 1; i >= 0; i--)
-        {
-            var bullet = bullets[i];
-            bullet.Y += bullet.IsPlayerBullet ? -bullet.Speed : bullet.Speed;
-
-            if (bullet.Y < 0 || bullet.Y > this.ClientSize.Height)
-            {
-                bullets.RemoveAt(i);
-            }
-        }
-    }
     private void CheckCollisions()
     {
+        var bullets = bulletManager.GetBullets();
+        var enemies = enemyManager.GetEnemies();
+
         for (int i = bullets.Count - 1; i >= 0; i--)
         {
             var bullet = bullets[i];
-
             if (!bullet.IsPlayerBullet)
                 continue;
 
@@ -153,30 +80,41 @@ public partial class Form1 : Form
 
                 if (bulletRect.IntersectsWith(enemy.GetRect()))
                 {
-                    enemies.RemoveAt(j);
-                    bullets.RemoveAt(i);
+                    enemyManager.RemoveEnemy(enemy);
+                    bulletManager.RemoveBullet(bullet);
                     break;
                 }
             }
         }
     }
 
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        controller.KeyDown(keyData);
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+    protected override void OnKeyUp(KeyEventArgs e)
+    {
+        controller.KeyUp(e.KeyCode);
+        base.OnKeyUp(e);
+    }
+
     private void Form1_Paint(object sender, PaintEventArgs e)
     {
         Graphics g = e.Graphics;
 
-
         g.FillRectangle(Brushes.Blue, player.GetRect());
 
-        foreach (var enemy in enemies)
+        foreach (var enemy in enemyManager.GetEnemies())
         {
             g.FillRectangle(Brushes.Red, enemy.GetRect());
         }
 
-        foreach (var bullet in bullets)
+        foreach (var bullet in bulletManager.GetBullets())
         {
             g.FillRectangle(Brushes.Yellow, bullet.GetRect());
         }
     }
-
 }
+
