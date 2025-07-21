@@ -5,7 +5,7 @@ namespace SpaceInvaders
         public int X, Y;
         public int Width = 5;
         public int Height = 10;
-        public int Speed = 15;
+        public int Speed = 15; // Randomizar de acordo com o tempo
         public bool IsPlayerBullet;
 
         public Rectangle GetRect() => new Rectangle(X, Y, Width, Height);

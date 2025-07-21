@@ -7,14 +7,5 @@ namespace SpaceInvaders
         public int Speed = 10;
 
         public Rectangle GetRect() => new Rectangle(X, Y, Width, Height);
-        public void MoveLeft()
-        {
-            X -= Speed;
-        }
-        
-        public void MoveRight()
-        {
-            X += Speed;
-        }
     }
 }

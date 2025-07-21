@@ -18,6 +18,7 @@ public partial class Form1 : Form
         this.Width = 800;
         this.Height = 600;
         this.Text = "Space Invaders";
+        this.BackColor = Color.Black;
 
         enemyManager = new EnemyManager(this.ClientSize.Width);
         enemyManager.InitializeEnemies();
@@ -41,12 +42,9 @@ public partial class Form1 : Form
         if (controller.ShootRequested)
         {
             Shoot();
-            Thread.Sleep(100);
             controller.ResetShoot();
         }
 
-        if (controller.MoveLeft) player.MoveLeft();
-        if (controller.MoveRight) player.MoveRight();
         enemyManager.Update();
         bulletManager.Update();
         CheckCollisions();
