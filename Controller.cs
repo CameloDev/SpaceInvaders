@@ -25,8 +25,6 @@ namespace SpaceInvaders
             else if (key == Keys.Space)
                 ShootRequested = false;
         }
-
-        // Depois que o Form tratar o tiro, resetar a flag pra evitar tiro infinito
         public void ResetShoot()
         {
             ShootRequested = false;

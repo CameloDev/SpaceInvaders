@@ -41,9 +41,12 @@ public partial class Form1 : Form
         if (controller.ShootRequested)
         {
             Shoot();
+            Thread.Sleep(100);
             controller.ResetShoot();
         }
 
+        if (controller.MoveLeft) player.MoveLeft();
+        if (controller.MoveRight) player.MoveRight();
         enemyManager.Update();
         bulletManager.Update();
         CheckCollisions();
@@ -115,6 +118,9 @@ public partial class Form1 : Form
         {
             g.FillRectangle(Brushes.Yellow, bullet.GetRect());
         }
+
+        g.DrawString("Use Left/Right arrows to move, Space to shoot", 
+                     this.Font, Brushes.White, new PointF(10, 10));
     }
 }
 

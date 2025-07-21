@@ -5,7 +5,16 @@ namespace SpaceInvaders
         public int X, Y;
         public int Width = 50, Height = 20;
         public int Speed = 10;
-        
+
         public Rectangle GetRect() => new Rectangle(X, Y, Width, Height);
+        public void MoveLeft()
+        {
+            X -= Speed;
+        }
+        
+        public void MoveRight()
+        {
+            X += Speed;
+        }
     }
 }
