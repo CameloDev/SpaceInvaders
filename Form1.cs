@@ -9,11 +9,11 @@ public partial class Form1 : Form
     private List<Bullet> bullets = new List<Bullet>();
     private Controller controller = new Controller();
     
-    private int enemyDirection = 1; // 1 = direita, -1 = esquerda
-    private int enemySpeed = 5; // pixels por frame
+    private int enemyDirection = 1; 
+    private int enemySpeed = 5; 
     private int enemyMoveDownAmount = 20;
-    private int enemyMoveCounter = 0; // contador para controlar movimento mais lento
-    private int enemyMoveInterval = 10; // mover a cada 10 ticks
+    private int enemyMoveCounter = 0; 
+    private int enemyMoveInterval = 10;
     public Form1()
     {
         InitializeComponent();
@@ -101,13 +101,11 @@ public partial class Form1 : Form
         {
             bool hitEdge = false;
 
-            // Move todos os inimigos na direção atual
             foreach (var enemy in enemies)
             {
                 enemy.Move(enemyDirection * enemySpeed, 0);
             }
 
-            // Verifica se algum inimigo bateu na borda da tela
             if (enemies.Any(e => e.X <= 0) || enemies.Any(e => e.X + e.Width >= this.ClientSize.Width))
             {
                 hitEdge = true;
@@ -115,7 +113,6 @@ public partial class Form1 : Form
 
             if (hitEdge)
             {
-                // Muda direção e desce os inimigos
                 enemyDirection *= -1;
                 foreach (var enemy in enemies)
                 {
@@ -133,7 +130,6 @@ public partial class Form1 : Form
             var bullet = bullets[i];
             bullet.Y += bullet.IsPlayerBullet ? -bullet.Speed : bullet.Speed;
 
-            // Remove bala fora da tela
             if (bullet.Y < 0 || bullet.Y > this.ClientSize.Height)
             {
                 bullets.RemoveAt(i);
@@ -147,7 +143,7 @@ public partial class Form1 : Form
             var bullet = bullets[i];
 
             if (!bullet.IsPlayerBullet)
-                continue; // Ignora balas inimigas (se existirem)
+                continue;
 
             Rectangle bulletRect = bullet.GetRect();
 
@@ -157,7 +153,6 @@ public partial class Form1 : Form
 
                 if (bulletRect.IntersectsWith(enemy.GetRect()))
                 {
-                    // Remove inimigo e bala
                     enemies.RemoveAt(j);
                     bullets.RemoveAt(i);
                     break;
