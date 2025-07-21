@@ -1,0 +1,15 @@
+C:\Users\prozi\csharp\SpaceInvaders\bin\Debug\net9.0-windows\SpaceInvaders.exe
+C:\Users\prozi\csharp\SpaceInvaders\bin\Debug\net9.0-windows\SpaceInvaders.deps.json
+C:\Users\prozi\csharp\SpaceInvaders\bin\Debug\net9.0-windows\SpaceInvaders.runtimeconfig.json
+C:\Users\prozi\csharp\SpaceInvaders\bin\Debug\net9.0-windows\SpaceInvaders.dll
+C:\Users\prozi\csharp\SpaceInvaders\bin\Debug\net9.0-windows\SpaceInvaders.pdb
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\SpaceInvaders.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\SpaceInvaders.AssemblyInfoInputs.cache
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\SpaceInvaders.AssemblyInfo.cs
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\SpaceInvaders.csproj.CoreCompileInputs.cache
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\SpaceInvaders.sourcelink.json
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\SpaceInvaders.dll
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\refint\SpaceInvaders.dll
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\SpaceInvaders.pdb
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\SpaceInvaders.genruntimeconfig.cache
+C:\Users\prozi\csharp\SpaceInvaders\obj\Debug\net9.0-windows\ref\SpaceInvaders.dll
