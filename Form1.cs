@@ -10,6 +10,7 @@ public partial class Form1 : Form
     private EnemyManager enemyManager;
     private BulletManager bulletManager;
 
+
     public Form1()
     {
         InitializeComponent();
@@ -117,8 +118,13 @@ public partial class Form1 : Form
             g.FillRectangle(Brushes.Yellow, bullet.GetRect());
         }
 
-        g.DrawString("Use Left/Right arrows to move, Space to shoot", 
-                     this.Font, Brushes.White, new PointF(10, 10));
+        g.DrawString("Use Left/Right arrows to move, Space to shoot",this.Font, Brushes.White, new PointF(10, 10));
+        g.DrawString($"Score: {enemyManager.GetEnemies().Count}", this.Font, Brushes.White, new PointF(10, 50));
+        g.DrawString($"Bullets: {bulletManager.GetBullets().Count}", this.Font, Brushes.White, new PointF(10, 70));
+        g.DrawString($"Enemies: {enemyManager.GetEnemies().Count}", this.Font, Brushes.White, new PointF(10, 90));
+        player.CountLives();
+        g.DrawString($"Lives: {player.Lives}", this.Font, Brushes.White, new PointF(10, 30));
+        
     }
 }
 
