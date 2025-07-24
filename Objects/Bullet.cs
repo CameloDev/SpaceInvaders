@@ -2,17 +2,44 @@ namespace SpaceInvaders
 {
     public class Bullet
     {
-        public int X, Y;
-        public int Width = 5;
-        public int Height = 10;
-        public int Speed = 15; // Randomizar de acordo com o tempo
-        public bool IsPlayerBullet;
+        private int x;
+        private int y;
+        private int speed;
+        private bool goingUp;
+        private readonly int width = 5;
+        private readonly int height = 10;
 
-        public Rectangle GetRect() => new Rectangle(X, Y, Width, Height);
+        private int screenHeight;
+
+        public Bullet(int x, int y, int speed, bool goingUp, bool isPlayerBullet, int screenHeight)
+        {
+            this.x = x;
+            this.y = y;
+            this.speed = speed;
+            this.goingUp = goingUp;
+            this.IsPlayerBullet = isPlayerBullet;
+            this.screenHeight = screenHeight;
+        }
 
         public void Move()
         {
-            Y += IsPlayerBullet ? -Speed : Speed;
+            y += goingUp ? -speed : speed;
         }
+
+        public bool IsOffScreen()
+        {
+            return y < 0 || y > screenHeight;
+        }
+
+        public Rectangle GetRect()
+        {
+            return new Rectangle(x, y, width, height);
+        }
+
+        public bool IsGoingUp()
+        {
+            return goingUp;
+        }
+        public bool IsPlayerBullet { get; set; }
     }
 }

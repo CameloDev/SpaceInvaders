@@ -2,17 +2,39 @@ namespace SpaceInvaders
 {
     public class Player
     {
-        public int X, Y;
-        public int Width = 50, Height = 20;
-        public int Speed = 10;
-        public int Lives = 3;
+        private int x;
+        private int y;
+        private int width = 50;
+        private int height = 20;
+        private int speed = 10;
 
-        public void CountLives()
+        public Player(int x, int y)
         {
-            Lives--;
-            if (Lives < 0) Lives = 0;
+            this.x = x;
+            this.y = y;
         }
 
-        public Rectangle GetRect() => new Rectangle(X, Y, Width, Height);
+        public void MoveLeft()
+        {
+            x -= speed;
+            if (x < 0) x = 0;
+        }
+
+        public void MoveRight(int formWidth)
+        {
+            x += speed;
+            if (x + width > formWidth)
+                x = formWidth - width;
+        }
+
+        public Rectangle GetRect()
+        {
+            return new Rectangle(x, y, width, height);
+        }
+
+        public Point GetCenter()
+        {
+            return new Point(x + width / 2, y);
+        }
     }
 }

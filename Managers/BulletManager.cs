@@ -3,17 +3,17 @@ namespace SpaceInvaders
     public class BulletManager
     {
         private List<Bullet> bullets = new List<Bullet>();
-        private int gameHeight;
-
-        public BulletManager(int gameHeight)
+        private int bulletSpeed = 10;
+         private int screenHeight;
+        public BulletManager(int screenHeight)
         {
-            this.gameHeight = gameHeight;
+            this.screenHeight = screenHeight;
+        }
+        public void AddBullet(int x, int y, bool goingUp, bool isPlayerBullet)
+        {
+            bullets.Add(new Bullet(x, y, bulletSpeed, goingUp, isPlayerBullet, screenHeight));
         }
 
-        public void AddBullet(Bullet bullet)
-        {
-            bullets.Add(bullet);
-        }
 
         public void Update()
         {
@@ -21,7 +21,7 @@ namespace SpaceInvaders
             {
                 bullets[i].Move();
 
-                if (bullets[i].Y < 0 || bullets[i].Y > gameHeight)
+                if (bullets[i].IsOffScreen())
                 {
                     bullets.RemoveAt(i);
                 }
@@ -33,7 +33,11 @@ namespace SpaceInvaders
             return bullets;
         }
 
-        public void RemoveBullet(Bullet bullet)
+        public void Clear()
+        {
+            bullets.Clear();
+        }
+        public void Remove(Bullet bullet)
         {
             bullets.Remove(bullet);
         }

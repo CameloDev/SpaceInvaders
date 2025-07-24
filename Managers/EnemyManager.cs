@@ -1,81 +1,104 @@
 namespace SpaceInvaders
 {
-    public class EnemyManager
+public class EnemyManager
     {
-        private List<Enemy> enemies = new List<Enemy>();
-        private int enemyDirection = 1;
-        private int enemySpeed = 5;
-        private int enemyMoveDownAmount = 20;
-        private int enemyMoveCounter = 0;
-        private int enemyMoveInterval = 10;
-        private int gameWidth;
+        private List<Enemy> enemies;
+        private int direction = 1; // 1 = direita, -1 = esquerda
+        private int moveDownStep = 10;
+        private int screenWidth;
+        private BulletManager bulletManager;
+        private int shootCooldown = 0;
 
-        public EnemyManager(int gameWidth)
+        public EnemyManager(int screenWidth, BulletManager bulletManager)
         {
-            this.gameWidth = gameWidth;
+            this.screenWidth = screenWidth;
+            this.bulletManager = bulletManager;
+            enemies = new List<Enemy>();
+            InitializeEnemies();
         }
 
-        public void InitializeEnemies()
+        private void InitializeEnemies()
         {
-            enemies.Clear();
-            int rows = 3;
-            int cols = 8;
-            int padding = 10;
-            int startX = 50;
+            int startX = 100;
             int startY = 50;
+            int spacingX = 40;
+            int spacingY = 40;
 
-            for (int r = 0; r < rows; r++)
+            for (int row = 0; row < 3; row++)
             {
-                for (int c = 0; c < cols; c++)
+                for (int col = 0; col < 10; col++)
                 {
-                    enemies.Add(new Enemy
-                    {
-                        X = startX + c * (40 + padding),
-                        Y = startY + r * (30 + padding)
-                    });
+                    int x = startX + col * spacingX;
+                    int y = startY + row * spacingY;
+                    enemies.Add(new Enemy(x, y));
                 }
             }
         }
 
         public void Update()
         {
-            enemyMoveCounter++;
+            MoveEnemies();
+            TryShoot();
+        }
 
-            if (enemyMoveCounter >= enemyMoveInterval)
+        private void MoveEnemies()
+        {
+            bool shouldMoveDown = false;
+
+            foreach (var enemy in enemies)
             {
-                bool hitEdge = false;
+                enemy.Move(direction);
+                if (enemy.ReachedScreenEdge(screenWidth))
+                {
+                    shouldMoveDown = true;
+                }
+            }
 
+            if (shouldMoveDown)
+            {
+                direction *= -1;
                 foreach (var enemy in enemies)
                 {
-                    enemy.Move(enemyDirection * enemySpeed, 0);
+                    enemy.MoveDown(moveDownStep);
                 }
-
-                if (enemies.Any(e => e.X <= 0) || enemies.Any(e => e.X + e.Width >= gameWidth))
-                {
-                    hitEdge = true;
-                }
-
-                if (hitEdge)
-                {
-                    enemyDirection *= -1;
-                    foreach (var enemy in enemies)
-                    {
-                        enemy.Move(0, enemyMoveDownAmount);
-                    }
-                }
-
-                enemyMoveCounter = 0;
             }
         }
 
-        public void RemoveEnemy(Enemy enemy)
+        private void TryShoot()
         {
-            enemies.Remove(enemy);
+            if (shootCooldown > 0)
+            {
+                shootCooldown--;
+                return;
+            }
+
+            // Inimigo aleatório atira
+            if (enemies.Count > 0)
+            {
+                var random = new System.Random();
+                int index = random.Next(enemies.Count);
+                Enemy shooter = enemies[index];
+                bulletManager.AddBullet(shooter.X + 15, shooter.Y + 20, false, false);
+                shootCooldown = 60; // tempo entre tiros
+            }
+        }
+
+        public void Draw(Graphics g)
+        {
+            foreach (var enemy in enemies)
+            {
+                enemy.Draw(g);
+            }
         }
 
         public List<Enemy> GetEnemies()
         {
             return enemies;
+        }
+
+        public void RemoveEnemy(Enemy enemy)
+        {
+            enemies.Remove(enemy);
         }
     }
 }

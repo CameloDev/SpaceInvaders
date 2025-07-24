@@ -1,15 +1,20 @@
 namespace SpaceInvaders;
+using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+
 public partial class Form1 : Form
 {
     private Timer gameTimer = new Timer();
     private int fps = 60;
-    private Player player = new Player { X = 100, Y = 500 };
+
+    private Player player = new Player(100, 500);
     private Controller controller = new Controller();
 
-    private EnemyManager enemyManager;
     private BulletManager bulletManager;
+    private EnemyManager enemyManager;
 
+    private BlockOfProtection block = new BlockOfProtection(300, 450);
 
     public Form1()
     {
@@ -21,10 +26,8 @@ public partial class Form1 : Form
         this.Text = "Space Invaders";
         this.BackColor = Color.Black;
 
-        enemyManager = new EnemyManager(this.ClientSize.Width);
-        enemyManager.InitializeEnemies();
-
         bulletManager = new BulletManager(this.ClientSize.Height);
+        enemyManager = new EnemyManager(this.ClientSize.Width, bulletManager);
 
         gameTimer.Interval = 1000 / fps;
         gameTimer.Tick += GameTimer_Tick;
@@ -35,10 +38,10 @@ public partial class Form1 : Form
 
     private void GameTimer_Tick(object sender, EventArgs e)
     {
-        if (controller.MoveLeft && player.X > 0)
-            player.X -= player.Speed;
-        if (controller.MoveRight && player.X < this.ClientSize.Width - player.Width)
-            player.X += player.Speed;
+        if (controller.MoveLeft)
+            player.MoveLeft();
+        if (controller.MoveRight)
+            player.MoveRight(this.ClientSize.Width);
 
         if (controller.ShootRequested)
         {
@@ -48,6 +51,7 @@ public partial class Form1 : Form
 
         enemyManager.Update();
         bulletManager.Update();
+
         CheckCollisions();
 
         this.Invalidate();
@@ -55,12 +59,11 @@ public partial class Form1 : Form
 
     private void Shoot()
     {
-        bulletManager.AddBullet(new Bullet
+        if (!bulletManager.GetBullets().Any(b => b.IsPlayerBullet))
         {
-            X = player.X + player.Width / 2 - 2,
-            Y = player.Y - 10,
-            IsPlayerBullet = true
-        });
+            Point center = player.GetCenter();
+            bulletManager.AddBullet(center.X, center.Y - 10, true, true);
+        }
     }
 
     private void CheckCollisions()
@@ -71,22 +74,30 @@ public partial class Form1 : Form
         for (int i = bullets.Count - 1; i >= 0; i--)
         {
             var bullet = bullets[i];
-            if (!bullet.IsPlayerBullet)
-                continue;
+            var bulletRect = bullet.GetRect();
 
-            Rectangle bulletRect = bullet.GetRect();
-
-            for (int j = enemies.Count - 1; j >= 0; j--)
+            if (bullet.IsPlayerBullet)
             {
-                var enemy = enemies[j];
-
-                if (bulletRect.IntersectsWith(enemy.GetRect()))
+                for (int j = enemies.Count - 1; j >= 0; j--)
                 {
-                    enemyManager.RemoveEnemy(enemy);
-                    bulletManager.RemoveBullet(bullet);
-                    break;
+                    if (enemies[j].GetRect().IntersectsWith(bulletRect))
+                    {
+                        enemyManager.RemoveEnemy(enemies[j]);
+                        bulletManager.Remove(bullet);
+                        break;
+                    }
                 }
             }
+            else
+            {
+                if (!block.IsDestroyed && bulletRect.IntersectsWith(block.GetRect()))
+                {
+                    block.TakeDamage();
+                    bulletManager.Remove(bullet);
+                }
+                
+            } 
+            
         }
     }
 
@@ -106,25 +117,27 @@ public partial class Form1 : Form
     {
         Graphics g = e.Graphics;
 
+        // Player
         g.FillRectangle(Brushes.Blue, player.GetRect());
 
+        // Inimigos
         foreach (var enemy in enemyManager.GetEnemies())
         {
             g.FillRectangle(Brushes.Red, enemy.GetRect());
         }
 
+        // Tiros
         foreach (var bullet in bulletManager.GetBullets())
         {
             g.FillRectangle(Brushes.Yellow, bullet.GetRect());
         }
 
-        g.DrawString("Use Left/Right arrows to move, Space to shoot",this.Font, Brushes.White, new PointF(10, 10));
-        g.DrawString($"Score: {enemyManager.GetEnemies().Count}", this.Font, Brushes.White, new PointF(10, 50));
-        g.DrawString($"Bullets: {bulletManager.GetBullets().Count}", this.Font, Brushes.White, new PointF(10, 70));
-        g.DrawString($"Enemies: {enemyManager.GetEnemies().Count}", this.Font, Brushes.White, new PointF(10, 90));
-        player.CountLives();
-        g.DrawString($"Lives: {player.Lives}", this.Font, Brushes.White, new PointF(10, 30));
-        
+        // Escudo
+        block.Draw(g);
+
+        // HUD
+        g.DrawString("←/→ Mover | Espaço: Atirar", this.Font, Brushes.White, new PointF(10, 10));
+        g.DrawString($"Inimigos: {enemyManager.GetEnemies().Count}", this.Font, Brushes.White, new PointF(10, 30));
+        g.DrawString($"Tiros: {bulletManager.GetBullets().Count}", this.Font, Brushes.White, new PointF(10, 50));
     }
 }
-
