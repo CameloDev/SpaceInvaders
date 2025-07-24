@@ -13,12 +13,13 @@ namespace SpaceInvaders
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.ClientSize = new Size(300, 200);
-
+            this.BackColor = Color.Black;
             Button startButton = new Button
             {
                 Text = "Iniciar Jogo",
                 Location = new Point(90, 40),
-                Size = new Size(120, 40)
+                Size = new Size(120, 40),
+                BackColor = Color.DarkGray
             };
             startButton.Click += StartButton_Click;
             this.Controls.Add(startButton);
@@ -27,7 +28,8 @@ namespace SpaceInvaders
             {
                 Text = "Sair",
                 Location = new Point(90, 100),
-                Size = new Size(120, 40)
+                Size = new Size(120, 40),
+                BackColor = Color.DarkGray
             };
             exitButton.Click += (s, e) => Application.Exit();
             this.Controls.Add(exitButton);
